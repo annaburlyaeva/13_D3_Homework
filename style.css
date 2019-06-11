@@ -25,10 +25,11 @@
   padding: 2px;
   padding-top: 8px;
   font: 12px sans-serif;
-  color: white;
+  color: blue;
   text-align: center;
-  background: #551aaf;
-  border: 0;
+  background: white;
+  border: 10;
+  border-color: blue;
   border-radius: 10px;
 }
 
@@ -56,6 +57,14 @@
   fill: #551aaf;
   transition: fill 0.3s ease-out;
   text-anchor: middle;
+}
+
+.activeText {
+  opacity: 1;
+}
+
+.inactiveText {
+  opacity: 0;
 }
 
 .inactive:hover {

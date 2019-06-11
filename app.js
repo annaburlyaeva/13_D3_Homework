@@ -1,4 +1,4 @@
-var svgWidth = 960;
+var svgWidth = 1200;
 var svgHeight = 500;
 
 var margin = {
@@ -66,6 +66,7 @@ function updateToolTip(chosenXAxis, circlesGroup) {
 
   if (chosenXAxis === "healthcare") {
     var label = "Healthcare: ";
+    var label2 = "Obesity: ";
   }
   else {
     var label = "Smokes: ";
@@ -75,7 +76,7 @@ function updateToolTip(chosenXAxis, circlesGroup) {
     .attr("class", "tooltip")
     .offset([80, -60])
     .html(function(d) {
-      return (`${d.state}<br>${label} ${d[chosenXAxis]}`);
+      return (`${d.state}<br>${label} ${d[chosenXAxis]}<br>${label2} ${d.obesity}`);
     });
 
   circlesGroup.call(toolTip);
@@ -83,7 +84,7 @@ function updateToolTip(chosenXAxis, circlesGroup) {
   circlesGroup.on("mouseover", function(data) {
     toolTip.show(data);
   })
-    // on mouseout event
+    // onmouseout event
     .on("mouseout", function(data, index) {
       toolTip.hide(data);
     });
@@ -131,9 +132,29 @@ d3.csv("data.csv", function(err, healthData) {
     .append("circle")
     .attr("cx", d => xLinearScale(d[chosenXAxis]))
     .attr("cy", d => yLinearScale(d.obesity))
-    .attr("r", 20)
-    .attr("fill", "pink")
-    .attr("opacity", ".3");
+    .attr("r", 15)
+    .attr("fill", "blue")
+    .attr("opacity", ".6")
+    .attr("class", "stateText");
+
+    var circlesText = chartGroup.selectAll("stateText")
+    .data(healthData)
+    .enter()
+    .append("text")
+    .text(function (d) {
+      return d.abbr;
+    })
+    .attr("x", function (d) {
+      return xLinearScale(d[chosenXAxis]);
+    })
+    .attr("y", function (d) {
+      return yLinearScale(d.obesity);
+    })
+    .attr("font-size", "10px")
+    .attr("text-anchor", "middle")
+    .attr("fill", "white");
+
+    
 
   // Create group for  2 x- axis labels
   var labelsGroup = chartGroup.append("g")
@@ -144,7 +165,7 @@ d3.csv("data.csv", function(err, healthData) {
     .attr("y", 20)
     .attr("value", "healthcare") // value to grab for event listener
     .classed("active", true)
-    .text("Healthcare Level");
+    .text("Health Risks");
 
   var smokesLabel = labelsGroup.append("text")
     .attr("x", 0)
@@ -156,11 +177,12 @@ d3.csv("data.csv", function(err, healthData) {
   // append y axis
   chartGroup.append("text")
     .attr("transform", "rotate(-90)")
-    .attr("y", 0 - margin.left)
+    .attr("y", 0 - margin.left + 30)
     .attr("x", 0 - (height / 2))
     .attr("dy", "1em")
-    .classed("axis-text", true)
-    .text("Obesity Level");
+    .classed("active", true)
+    .text("Obesity Degree");
+
 
   // updateToolTip function above csv import
   var circlesGroup = updateToolTip(chosenXAxis, circlesGroup);
@@ -175,8 +197,6 @@ d3.csv("data.csv", function(err, healthData) {
         // replaces chosenXAxis with value
         chosenXAxis = value;
 
-        console.log(chosenXAxis)
-
         // functions here found above csv import
         // updates x scale for new data
         xLinearScale = xScale(healthData, chosenXAxis);
@@ -190,7 +210,8 @@ d3.csv("data.csv", function(err, healthData) {
         // updates tooltips with new info
         circlesGroup = updateToolTip(chosenXAxis, circlesGroup);
 
-        // changes classes to change bold text
+    
+        // changes classes
         if (chosenXAxis === "smokes") {
           smokesLabel
             .classed("active", true)
@@ -198,6 +219,27 @@ d3.csv("data.csv", function(err, healthData) {
           healthCareLabel
             .classed("active", false)
             .classed("inactive", true);
+
+          circlesText
+            .classed("activeText", false)
+            .classed("inactiveText", true);
+            
+          circlesText = chartGroup.selectAll("stateText")
+            .data(healthData)
+            .enter()
+            .append("text")
+            .text(function (d) {
+              return d.abbr;
+            })
+            .attr("x", function (d) {
+              return xLinearScale(d[chosenXAxis]);
+            })
+            .attr("y", function (d) {
+              return yLinearScale(d.obesity);
+            })
+            .attr("font-size", "10px")
+            .attr("text-anchor", "middle")
+            .attr("fill", "white");
         }
         else {
           smokesLabel
@@ -206,6 +248,26 @@ d3.csv("data.csv", function(err, healthData) {
           healthCareLabel
             .classed("active", true)
             .classed("inactive", false);
+          circlesText
+            .classed("activeText", false)
+            .classed("inactiveText", true);
+
+            circlesText = chartGroup.selectAll("stateText")
+            .data(healthData)
+            .enter()
+            .append("text")
+            .text(function (d) {
+              return d.abbr;
+            })
+            .attr("x", function (d) {
+              return xLinearScale(d[chosenXAxis]);
+            })
+            .attr("y", function (d) {
+              return yLinearScale(d.obesity);
+            })
+            .attr("font-size", "10px")
+            .attr("text-anchor", "middle")
+            .attr("fill", "white");
         }
       }
     });
